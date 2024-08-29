@@ -1,7 +1,6 @@
 package com.Shortening.acortador_URL.controllers;
 
 import java.net.URI;
-import java.time.LocalDate;
 
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
@@ -44,6 +43,13 @@ public class urlsController {
         
         var originalUrl = urlsService.getOriginalUrl(shortUrl);
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(originalUrl)).build();
+    }
+
+    @Operation (summary = "Obtener URL corta", description = "Obtener URL corta")
+    @GetMapping("get-short/{shortUrl}")
+    public ResponseEntity<String> getShortUrl(@PathVariable String shortUrl) {
+        
+        return ResponseEntity.ok("http://localhost:8100/api/redirect/" + shortUrl);
     }
     
 }
