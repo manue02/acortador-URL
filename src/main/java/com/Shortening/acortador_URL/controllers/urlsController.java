@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,10 +36,12 @@ public class urlsController {
         return urlsService.convertToShortUrl(request);
     }
 
+    @CrossOrigin(origins = "http://localhost:8100") // Reemplaza con la URL de tu Swagger UI
     @Operation(summary = "Redireccionar", description = "Redirecciona a la URL original a partir de la URL corta")
     @GetMapping("redirect/{shortUrl}")
     @Cacheable(value = "urls", key = "#shortUrl", sync = true)
     public ResponseEntity<Void> getAndRedirect(@PathVariable String shortUrl) {
+        
         var originalUrl = urlsService.getOriginalUrl(shortUrl);
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(originalUrl)).build();
     }

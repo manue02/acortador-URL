@@ -52,15 +52,18 @@ public class urlsService {
 
     public String getOriginalUrl(String shortUrl) {
 
-        var id = baseService.decode(shortUrl);
-        var entity = urlsRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("There is no entity with " + shortUrl));
+        var entity = urlsRepository.findByShortUrl(shortUrl)
+            .orElseThrow(() -> new EntityNotFoundException("There is no entity with " + shortUrl));
 
-        if (entity.getExpiresAt() != null && entity.getExpiresAt().isBefore(LocalDate.now())) {
+        if (entity.getExpiresAt() != null && entity.getExpiresAt().isBefore(LocalDate.now()) || !entity.getActivo()) {
            
                 entity.setActivo(false);
                 urlsRepository.save(entity);
             throw new EntityNotFoundException("Link expired!");
+        }else{
+            entity.setLastVisited(LocalDate.now());
+            entity.setActivo(true);
+            urlsRepository.save(entity);
         }
 
         return entity.getLongUrl();
@@ -73,5 +76,7 @@ public class urlsService {
     public Optional<usuarioModels> findById(Integer id) {
         return usuarioRepository.findById(id);
     }
+
+    
     
 }
